@@ -1,5 +1,5 @@
 #include <gl\glew.h>
-#include <MeGlWindow.h>
+#include "MeGlWindow.h"
 
 void MeGlWindow::initializeGL()
 {

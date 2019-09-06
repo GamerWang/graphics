@@ -10,4 +10,5 @@
 *.idb
 .vs/
 *.tlog/
+Debug
 Debug/Tmp
