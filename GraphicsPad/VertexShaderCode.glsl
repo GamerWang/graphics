@@ -11,9 +11,6 @@ out vec3 theColor;
 
 void main()
 {
-	gl_Position = vec4(position, 0.0, 1.0);
-	gl_Position.y = gl_Position.y * yFlip;
-	gl_Position.x = gl_Position.x + positionOffset.x;
-	gl_Position.y = gl_Position.y + positionOffset.y;
+	gl_Position = vec4(position + positionOffset, 0.0, 1.0);
 	theColor = dominatingColor;
 }
