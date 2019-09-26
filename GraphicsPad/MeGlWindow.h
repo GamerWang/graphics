@@ -2,6 +2,8 @@
 #define ME_GL_WINDOW
 #include <QtOpenGL\qglwidget>
 #include <QtGui\QKeyEvent>
+#include <QtCore\qtimer.h>
+#include <QtCore\qdatetime.h>
 #include <GL\freeglut.h>
 #include <glm\glm.hpp>
 

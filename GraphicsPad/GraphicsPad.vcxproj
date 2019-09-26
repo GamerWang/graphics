@@ -98,13 +98,13 @@
       <AdditionalDependencies>freeglut.lib;glew32d.lib;QtCored4.lib;QtGuid4.lib;QtOpenGLd4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(ProjectDir)..\Middleware\freeglut\bin\freeglut.dll $(targetDir) /Y
-xcopy $(ProjectDir)..\Middleware\glew\bin\glew32d.dll $(targetDir) /Y
-xcopy $(ProjectDir)..\Middleware\Qt\bin\QtCored4.dll $(targetDir) /Y
-xcopy $(ProjectDir)..\Middleware\Qt\bin\QtGuid4.dll $(targetDir) /Y
-xcopy $(ProjectDir)..\Middleware\Qt\bin\QtOpenGLd4.dll $(targetDir) /Y
-xcopy $(ProjectDir)VertexShaderCode.glsl $(targetDir) /Y
-xcopy $(ProjectDir)FragmentShaderCode.glsl $(targetDir) /Y</Command>
+      <Command>xcopy $(ProjectDir)..\Middleware\freeglut\bin\freeglut.dll $(TargetDir) /Y
+xcopy $(ProjectDir)..\Middleware\glew\bin\glew32d.dll $(TargetDir) /Y
+xcopy $(ProjectDir)..\Middleware\Qt\bin\QtCored4.dll $(TargetDir) /Y
+xcopy $(ProjectDir)..\Middleware\Qt\bin\QtGuid4.dll $(TargetDir) /Y
+xcopy $(ProjectDir)..\Middleware\Qt\bin\QtOpenGLd4.dll $(TargetDir) /Y
+
+xcopy $(ProjectDir)*.glsl $(TargetDir) /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,13 +140,13 @@ xcopy $(ProjectDir)FragmentShaderCode.glsl $(targetDir) /Y</Command>
       <AdditionalDependencies>freeglut.lib;glew32d.lib;QtCored4.lib;QtGuid4.lib;QtOpenGLd4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(ProjectDir)..\Middleware\freeglut\bin\freeglut.dll $(targetDir) /Y
-xcopy $(ProjectDir)..\Middleware\glew\bin\glew32d.dll $(targetDir) /Y
-xcopy $(ProjectDir)..\Middleware\Qt\bin\QtCored4.dll $(targetDir) /Y
-xcopy $(ProjectDir)..\Middleware\Qt\bin\QtGuid4.dll $(targetDir) /Y
-xcopy $(ProjectDir)..\Middleware\Qt\bin\QtOpenGLd4.dll $(targetDir) /Y
-xcopy $(ProjectDir)VertexShaderCode.glsl $(targetDir) /Y
-xcopy $(ProjectDir)FragmentShaderCode.glsl $(targetDir) /Y</Command>
+      <Command>xcopy $(ProjectDir)..\Middleware\freeglut\bin\freeglut.dll $(TargetDir) /Y
+xcopy $(ProjectDir)..\Middleware\glew\bin\glew32d.dll $(TargetDir) /Y
+xcopy $(ProjectDir)..\Middleware\Qt\bin\QtCored4.dll $(TargetDir) /Y
+xcopy $(ProjectDir)..\Middleware\Qt\bin\QtGuid4.dll $(TargetDir) /Y
+xcopy $(ProjectDir)..\Middleware\Qt\bin\QtOpenGLd4.dll $(TargetDir) /Y
+
+xcopy $(ProjectDir)*.glsl $(TargetDir) /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -169,13 +169,17 @@ xcopy $(ProjectDir)FragmentShaderCode.glsl $(targetDir) /Y</Command>
   <ItemGroup>
     <ClCompile Include="Mainer.cpp" />
     <ClCompile Include="MeGlWindow.cpp" />
+    <ClCompile Include="Prj3Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGlWindow.h" />
+    <ClInclude Include="Prj3Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShaderCode.glsl" />
-    <None Include="VertexShaderCode.glsl" />
+    <None Include="prj2_frag.glsl" />
+    <None Include="prj2_vert.glsl" />
+    <None Include="prj3_frag.glsl" />
+    <None Include="prj3_vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

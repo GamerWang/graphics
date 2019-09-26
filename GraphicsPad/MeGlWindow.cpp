@@ -59,10 +59,10 @@ void installShaders() {
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	const char* adapter[1];
-	string temp = readShaderCode("./VertexShaderCode.glsl");
+	string temp = readShaderCode("./prj2_vert.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(vertexShaderID, 1, adapter, 0);
-	temp = readShaderCode("./FragmentShaderCode.glsl");
+	temp = readShaderCode("./prj2_frag.glsl");
 	adapter[0] = temp.c_str();
 	glShaderSource(fragmentShaderID, 1, adapter, 0);
 

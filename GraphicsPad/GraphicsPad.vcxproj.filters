@@ -3,12 +3,29 @@
   <ItemGroup>
     <ClCompile Include="Mainer.cpp" />
     <ClCompile Include="MeGlWindow.cpp" />
+    <ClCompile Include="Prj3Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MeGlWindow.h" />
+    <ClInclude Include="Prj3Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="VertexShaderCode.glsl" />
-    <None Include="FragmentShaderCode.glsl" />
+    <None Include="prj2_frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="prj2_vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="prj3_vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="prj3_frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{9d3aebac-7a08-414b-a9c5-8ddc011c2aa4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
