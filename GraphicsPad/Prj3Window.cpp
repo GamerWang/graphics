@@ -21,6 +21,10 @@ void Prj3Window::sendDataToOpenGL() {
 		+0.1f, +0.1f,
 		+0.0f, +0.2f,
 		-0.1f, +0.1f,
+		+0.0f, -0.1f,
+		+0.2f, +0.1f,
+		+0.0f, +0.3f,
+		-0.2f, +0.1f,
 
 		+0.0f, +1.0f,
 		+1.0f, +0.0f,
@@ -35,7 +39,16 @@ void Prj3Window::sendDataToOpenGL() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
-	GLushort indices[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+	GLushort indices[] = { 
+		0, 5, 1, 
+		0, 4, 5,
+		1, 6, 2,
+		1, 5, 6,
+		2, 6, 7,
+		2, 7, 3,
+		3, 7, 4,
+		3, 4, 0,
+	};
 	GLuint indexBufferId;
 	glGenBuffers(1, &indexBufferId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
@@ -140,7 +153,7 @@ void Prj3Window::paintGL() {
 	glUniform3fv(dominatingColorUniformLocation, 1, &dominatingColor[0]);
 	glUniform2fv(positionOffsetUniformLocation, 1, &offset[0]);
 
-	glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_SHORT, 0);
 
 	dominatingColor = vec3(0.0f, 1.0f, 0.0f);
 	offset = vec2(0, 0);
@@ -148,5 +161,5 @@ void Prj3Window::paintGL() {
 	glUniform3fv(dominatingColorUniformLocation, 1, &dominatingColor[0]);
 	glUniform2fv(positionOffsetUniformLocation, 1, &offset[0]);
 
-	glDrawArrays(GL_LINE_LOOP, 4, 4);
+	glDrawArrays(GL_LINE_LOOP, 8, 4);
 }
