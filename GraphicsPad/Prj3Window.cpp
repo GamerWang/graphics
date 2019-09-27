@@ -6,6 +6,10 @@ float Vec2Cross(vec2 v1, vec2 v2) {
 	return (v1.x * v2.y - v2.x * v1.y);
 }
 
+float Vec2Dot(vec2 v1, vec2 v2) {
+	return (v1.x * v2.x + v1.y * v2.y);
+}
+
 string Prj3Window::readShaderCode(const char* fileName) {
 	ifstream meInput(fileName);
 	if (!meInput.good()) {
@@ -113,14 +117,14 @@ void Prj3Window::installShaders() {
 }
 
 void Prj3Window::initializeGL() {
+	// set core data
 	topCorner = vec2(0.0, 1.0);
 	rightCorner = vec2(1.0, 0.0);
 	bottomCorner = vec2(0.0, -1.0);
 	leftCorner = vec2(-1.0, 0.0);
 
-	glewInit();
-	sendDataToOpenGL();
-	installShaders();
+	vec2* normals;
+	normals[0] = vec2(-1.0f, -1.0f);
 
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -146,6 +150,11 @@ void Prj3Window::initializeGL() {
 	position = vec2(0, 0);
 
 	lastUpdate = allMsec;
+	
+	// initilize gl functions
+	glewInit();
+	sendDataToOpenGL();
+	installShaders();
 }
 
 void Prj3Window::paintGL() {
@@ -165,17 +174,24 @@ void Prj3Window::paintGL() {
 
 	vec2 centerPos = position + vec2(0, 0.01f);
 	vec2 normal;
-	// checkthe edges for reflection using cross product
+	bool hit = false;
+	// check the object hit using cross product
 	if (Vec2Cross(rightCorner - centerPos, topCorner - centerPos) < 0) {
-		speed = 0;
+		hit = true;
 	}
 	else if (Vec2Cross(topCorner - centerPos, leftCorner - centerPos) < 0) {
-		speed = 0;
+		hit = true;
 	}
 	else if (Vec2Cross(leftCorner - centerPos, bottomCorner - centerPos) < 0) {
-		speed = 0;
+		hit = true;
 	}
 	else if (Vec2Cross(bottomCorner - centerPos, rightCorner - centerPos) < 0) {
+		hit = true;
+	}
+	// check the object hit using dot product
+
+
+	if (hit) {
 		speed = 0;
 	}
 	
