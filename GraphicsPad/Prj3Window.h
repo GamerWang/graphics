@@ -37,6 +37,11 @@ protected:
 
 	int lastUpdate;
 
+	vec2 topCorner;
+	vec2 rightCorner;
+	vec2 bottomCorner;
+	vec2 leftCorner;
+
 	GLuint programID;
 };
 

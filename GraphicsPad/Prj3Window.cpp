@@ -2,6 +2,10 @@
 
 #include "Prj3Window.h"
 
+float Vec2Cross(vec2 v1, vec2 v2) {
+	return (v1.x * v2.y - v2.x * v1.y);
+}
+
 string Prj3Window::readShaderCode(const char* fileName) {
 	ifstream meInput(fileName);
 	if (!meInput.good()) {
@@ -18,18 +22,22 @@ void Prj3Window::sendDataToOpenGL() {
 
 	GLfloat verts[] = {
 		+0.0f, +0.0f,
-		+0.1f, +0.1f,
-		+0.0f, +0.2f,
-		-0.1f, +0.1f,
-		+0.0f, -0.1f,
-		+0.2f, +0.1f,
-		+0.0f, +0.3f,
-		-0.2f, +0.1f,
+		+0.01f, +0.01f,
+		+0.0f, +0.02f,
+		-0.01f, +0.01f,
+		+0.0f, -0.01f,
+		+0.02f, +0.01f,
+		+0.0f, +0.03f,
+		-0.02f, +0.01f,
 
-		+0.0f, +1.0f,
-		+1.0f, +0.0f,
-		+0.0f, -1.0f,
-		-1.0f, +0.0f,
+		//+0.0f, +1.0f,
+		topCorner.x, topCorner.y,
+		//+1.0f, +0.0f,
+		rightCorner.x, rightCorner.y,
+		//+0.0f, -1.0f,
+		bottomCorner.x, bottomCorner.y,
+		//-1.0f, +0.0f,
+		leftCorner.x, leftCorner.y,
 	};
 
 	GLuint triangleVertexBufferID;
@@ -105,6 +113,11 @@ void Prj3Window::installShaders() {
 }
 
 void Prj3Window::initializeGL() {
+	topCorner = vec2(0.0, 1.0);
+	rightCorner = vec2(1.0, 0.0);
+	bottomCorner = vec2(0.0, -1.0);
+	leftCorner = vec2(-1.0, 0.0);
+
 	glewInit();
 	sendDataToOpenGL();
 	installShaders();
@@ -114,7 +127,7 @@ void Prj3Window::initializeGL() {
 	deltaTime = 15;
 	timer->start(deltaTime);
 
-	speed = 0.1f;
+	speed = 0.8f;
 
 	QTime time = QTime::currentTime();
 	int allMsec = time.second() * 1000 + time.msec();
@@ -123,8 +136,10 @@ void Prj3Window::initializeGL() {
 
 	float dirx = rand() % 100;
 	dirx /= 100;
+	dirx -= 0.5f;
 	float diry = rand() % 100;
 	diry /= 100;
+	diry -= 0.5f;
 
 	moveDir = vec2(dirx, diry);
 
@@ -147,6 +162,24 @@ void Prj3Window::paintGL() {
 	GLint positionOffsetUniformLocation = glGetUniformLocation(programID, "positionOffset");
 
 	vec3 dominatingColor(1.0f, 0.0f, 0.0f);
+
+	vec2 centerPos = position + vec2(0, 0.01f);
+	vec2 normal;
+	// checkthe edges for reflection using cross product
+	if (Vec2Cross(rightCorner - centerPos, topCorner - centerPos) < 0) {
+		speed = 0;
+	}
+	else if (Vec2Cross(topCorner - centerPos, leftCorner - centerPos) < 0) {
+		speed = 0;
+	}
+	else if (Vec2Cross(leftCorner - centerPos, bottomCorner - centerPos) < 0) {
+		speed = 0;
+	}
+	else if (Vec2Cross(bottomCorner - centerPos, rightCorner - centerPos) < 0) {
+		speed = 0;
+	}
+	
+
 	position += moveDir * speed * timePassed;
 	vec2 offset = position;
 
