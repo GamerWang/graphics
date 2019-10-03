@@ -42,6 +42,11 @@ protected:
 	vec2 bottomCorner;
 	vec2 leftCorner;
 
+	vec2 normalTopRight;
+	vec2 normalBottomRight;
+	vec2 normalTopLeft;
+	vec2 normalBottomLeft;
+
 	GLuint programID;
 };
 

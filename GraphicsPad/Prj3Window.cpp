@@ -123,8 +123,10 @@ void Prj3Window::initializeGL() {
 	bottomCorner = vec2(0.0, -1.0);
 	leftCorner = vec2(-1.0, 0.0);
 
-	vec2* normals;
-	normals[0] = vec2(-1.0f, -1.0f);
+	normalTopRight = vec2(-1, -1);
+	normalBottomRight = vec2(-1, 1);
+	normalTopLeft = vec2(1, -1);
+	normalBottomLeft = vec2(1, 1);
 
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -176,20 +178,32 @@ void Prj3Window::paintGL() {
 	vec2 normal;
 	bool hit = false;
 	// check the object hit using cross product
-	if (Vec2Cross(rightCorner - centerPos, topCorner - centerPos) < 0) {
-		hit = true;
-	}
-	else if (Vec2Cross(topCorner - centerPos, leftCorner - centerPos) < 0) {
-		hit = true;
-	}
-	else if (Vec2Cross(leftCorner - centerPos, bottomCorner - centerPos) < 0) {
-		hit = true;
-	}
-	else if (Vec2Cross(bottomCorner - centerPos, rightCorner - centerPos) < 0) {
-		hit = true;
-	}
-	// check the object hit using dot product
+	//if (Vec2Cross(rightCorner - centerPos, topCorner - centerPos) < 0) {
+	//	hit = true;
+	//}
+	//else if (Vec2Cross(topCorner - centerPos, leftCorner - centerPos) < 0) {
+	//	hit = true;
+	//}
+	//else if (Vec2Cross(leftCorner - centerPos, bottomCorner - centerPos) < 0) {
+	//	hit = true;
+	//}
+	//else if (Vec2Cross(bottomCorner - centerPos, rightCorner - centerPos) < 0) {
+	//	hit = true;
+	//}
 
+	// check the object hit using dot product
+	if (Vec2Dot(centerPos - topCorner, normalTopRight) < 0) {
+		hit = true;
+	}
+	else if (Vec2Dot(centerPos - rightCorner, normalBottomRight) < 0) {
+		hit = true;
+	}
+	else if (Vec2Dot(centerPos - bottomCorner, normalBottomLeft) < 0) {
+		hit = true;
+	}
+	else if (Vec2Dot(centerPos - leftCorner, normalTopLeft) < 0) {
+		hit = true;
+	}
 
 	if (hit) {
 		speed = 0;
