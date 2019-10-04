@@ -12,6 +12,15 @@ float Vec2Dot(vec2 v1, vec2 v2) {
 	return (v1.x * v2.x + v1.y * v2.y);
 }
 
+vec2 Vec2Normal(vec2 v, bool isClockWise = true) {
+	vec2 n = vec2(v.y, v.x);
+	n *= vec2(1, -1);
+	if (!isClockWise) {
+		n *= -1.0f;
+	}
+	return n;
+}
+
 string Prj3Window::readShaderCode(const char* fileName) {
 	ifstream meInput(fileName);
 	if (!meInput.good()) {
@@ -127,17 +136,26 @@ void Prj3Window::initializeGL() {
 	bottomCorner = vec2(0.0, -1.0);
 	leftCorner = vec2(-1.0, 0.0);
 
-	normalTopRight = vec2(-1, -1);
-	normalBottomRight = vec2(-1, 1);
-	normalTopLeft = vec2(1, -1);
-	normalBottomLeft = vec2(1, 1);
+	vec2 topRight = rightCorner - topCorner; //(1,-1)
+	vec2 bottomRight = bottomCorner - rightCorner; //(-1,-1)
+	vec2 bottomLeft = leftCorner - bottomCorner; //(-1,1)
+	vec2 topLeft = topCorner - leftCorner; //(1,1)
+
+	normalTopRight = Vec2Normal(topRight, true);
+	normalTopRight /= sqrtf(2);
+	normalBottomRight = Vec2Normal(bottomRight, true);
+	normalBottomRight /= sqrtf(2);
+	normalBottomLeft = Vec2Normal(bottomLeft, true);
+	normalBottomLeft /= sqrtf(2);
+	normalTopLeft = Vec2Normal(topLeft, true);
+	normalTopLeft /= sqrtf(2);
 
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
 	deltaTime = 15;
 	timer->start(deltaTime);
 
-	speed = 0.6f;
+	speed = 1.2f;
 
 	QTime time = QTime::currentTime();
 	int allMsec = time.second() * 1000 + time.msec();
@@ -145,13 +163,6 @@ void Prj3Window::initializeGL() {
 	srand(allMsec);
 	float angle = rand() % 360;
 	angle = angle * PI / 180;
-
-	//float dirx = rand() % 100;
-	//dirx /= 100;
-	//dirx -= 0.5f;
-	//float diry = rand() % 100;
-	//diry /= 100;
-	//diry -= 0.5f;
 
 	float dirx = cosf(angle);
 	float diry = sinf(angle);
@@ -185,9 +196,12 @@ void Prj3Window::paintGL() {
 
 	vec3 dominatingColor(1.0f, 0.0f, 0.0f);
 
+	position += moveDir * speed * timePassed;
+
 	vec2 centerPos = position + vec2(0, 0.01f);
 	vec2 normal;
 	bool hit = false;
+	vec2 shadow;
 
 	// check the object hit using cross product
 	//if (Vec2Cross(rightCorner - centerPos, topCorner - centerPos) < 0) {
@@ -204,25 +218,36 @@ void Prj3Window::paintGL() {
 	//}
 
 	// check the object hit using dot product
-	if (Vec2Dot(centerPos - topCorner, normalTopRight) < 0) {
-		hit = true;
-	}
-	else if (Vec2Dot(centerPos - rightCorner, normalBottomRight) < 0) {
-		hit = true;
-	}
-	else if (Vec2Dot(centerPos - bottomCorner, normalBottomLeft) < 0) {
-		hit = true;
-	}
-	else if (Vec2Dot(centerPos - leftCorner, normalTopLeft) < 0) {
-		hit = true;
-	}
+	do {
+		if (Vec2Dot(centerPos - topCorner, normalTopRight) < 0) {
+			hit = true;
+			shadow = Vec2Dot(moveDir, normalTopRight) * normalTopRight;
+		}
+		else if (Vec2Dot(centerPos - rightCorner, normalBottomRight) < 0) {
+			hit = true;
+			shadow = Vec2Dot(moveDir, normalBottomRight) * normalBottomRight;
+		}
+		else if (Vec2Dot(centerPos - bottomCorner, normalBottomLeft) < 0) {
+			hit = true;
+			shadow = Vec2Dot(moveDir, normalBottomLeft) * normalBottomLeft;
+		}
+		else if (Vec2Dot(centerPos - leftCorner, normalTopLeft) < 0) {
+			hit = true;
+			shadow = Vec2Dot(moveDir, normalTopLeft) * normalTopLeft;
+		}
+		else {
+			hit = false;
+		}
 
-	if (hit) {
-		speed = 0;
-	}
+		if (hit) {
+			// move backwards a little bit
+			position -= moveDir * speed * timePassed * 1.0f;
+			centerPos = position + vec2(0, 0.01f);
+			// reflect moveDir here
+			moveDir = moveDir - shadow * 2.0f;
+		}
+	} while (hit == true);
 	
-
-	position += moveDir * speed * timePassed;
 	vec2 offset = position;
 
 	glUniform3fv(dominatingColorUniformLocation, 1, &dominatingColor[0]);
