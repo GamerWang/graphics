@@ -2,6 +2,8 @@
 
 #include "Prj3Window.h"
 
+#define PI 3.14159265
+
 float Vec2Cross(vec2 v1, vec2 v2) {
 	return (v1.x * v2.y - v2.x * v1.y);
 }
@@ -117,6 +119,8 @@ void Prj3Window::installShaders() {
 }
 
 void Prj3Window::initializeGL() {
+	resize(600, 600);
+
 	// set core data
 	topCorner = vec2(0.0, 1.0);
 	rightCorner = vec2(1.0, 0.0);
@@ -133,19 +137,24 @@ void Prj3Window::initializeGL() {
 	deltaTime = 15;
 	timer->start(deltaTime);
 
-	speed = 0.8f;
+	speed = 0.6f;
 
 	QTime time = QTime::currentTime();
 	int allMsec = time.second() * 1000 + time.msec();
 
 	srand(allMsec);
+	float angle = rand() % 360;
+	angle = angle * PI / 180;
 
-	float dirx = rand() % 100;
-	dirx /= 100;
-	dirx -= 0.5f;
-	float diry = rand() % 100;
-	diry /= 100;
-	diry -= 0.5f;
+	//float dirx = rand() % 100;
+	//dirx /= 100;
+	//dirx -= 0.5f;
+	//float diry = rand() % 100;
+	//diry /= 100;
+	//diry -= 0.5f;
+
+	float dirx = cosf(angle);
+	float diry = sinf(angle);
 
 	moveDir = vec2(dirx, diry);
 
@@ -172,11 +181,14 @@ void Prj3Window::paintGL() {
 	GLint dominatingColorUniformLocation = glGetUniformLocation(programID, "dominatingColor");
 	GLint positionOffsetUniformLocation = glGetUniformLocation(programID, "positionOffset");
 
+
+
 	vec3 dominatingColor(1.0f, 0.0f, 0.0f);
 
 	vec2 centerPos = position + vec2(0, 0.01f);
 	vec2 normal;
 	bool hit = false;
+
 	// check the object hit using cross product
 	//if (Vec2Cross(rightCorner - centerPos, topCorner - centerPos) < 0) {
 	//	hit = true;
