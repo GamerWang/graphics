@@ -1,6 +1,7 @@
 #include <Qt\qapplication.h>
 //#include "MeGlWindow.h"
-#include "Prj3Window.h"
+//#include "Prj3Window.h"
+#include "Prj4Window.h"
 
 int main(int argc, char* argv[])
 {
@@ -11,7 +12,11 @@ int main(int argc, char* argv[])
 	//meWindow.show();
 
 	// Prj3
-	Prj3Window meWindow;
+	//Prj3Window meWindow;
+	//meWindow.show();
+
+	// Prj4
+	Prj4Window meWindow;
 	meWindow.show();
 
 	return app.exec();

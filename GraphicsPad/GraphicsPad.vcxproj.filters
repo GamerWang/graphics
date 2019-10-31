@@ -2,12 +2,16 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Mainer.cpp" />
-    <ClCompile Include="MeGlWindow.cpp" />
     <ClCompile Include="Prj3Window.cpp" />
+    <ClCompile Include="Prj4Window.cpp" />
+    <ClCompile Include="Primitives\ShapeGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MeGlWindow.h" />
     <ClInclude Include="Prj3Window.h" />
+    <ClInclude Include="Prj4Window.h" />
+    <ClInclude Include="Primitives\ShapeData.h" />
+    <ClInclude Include="Primitives\ShapeGenerator.h" />
+    <ClInclude Include="Primitives\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="prj2_frag.glsl">
@@ -20,6 +24,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="prj3_frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="prj4_frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="prj4_vert.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
