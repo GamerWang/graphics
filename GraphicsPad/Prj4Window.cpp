@@ -6,6 +6,7 @@
 #include <QtCore\qdatetime.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <glm\gtx\transform.hpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,8 +15,11 @@
 #include "Prj4Window.h"
 #include "Primitives\Vertex.h"
 #include "Primitives\ShapeGenerator.h"
+#include "Camera.h"
+
 using namespace std;
 using glm::vec3;
+using glm::vec4;
 using glm::mat4;
 
 const uint NUM_VERTICES_PER_TRI = 3;
@@ -23,8 +27,11 @@ const uint NUM_FLOATS_PER_VERTICE = 6;
 const uint VERTEX_BYTE_SIZE = NUM_FLOATS_PER_VERTICE * sizeof(float);
 GLuint programID;
 GLuint numIndices;
+Camera camera;
 
-#define ROTATION_SPEED 60.0f
+#define ROTATION_SPEED 10.0f
+#define CAMERA_MOVE_STEP 0.3f
+#define CAMERA_ROTATION_STEP 1.0f
 
 void sendDataToOpenGL()
 {
@@ -56,20 +63,21 @@ void Prj4Window::paintGL()
 	lastUpdate = currentUpdate;
 
 	vec3 rotationAxis = vec3(1, 1, 1);
-	//rotationAxis.operator/=(rotationAxis.length);
 
-	rotation += (timePassed * ROTATION_SPEED);
-
-	vec3 position = vec3(0, 0, -10.0f * (sinf((float)currentUpdate/1000 * 1.5f) + 1.5f));
+	cubeRotation += (timePassed * ROTATION_SPEED);
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	glViewport(0, 0, width(), height());
 
-	mat4 translationMatrix = glm::translate(mat4(), position);
-	mat4 rotationMatrix1 = glm::rotate(mat4(), rotation, rotationAxis);
-	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 100.0f);
+	mat4 translationMatrix = glm::translate(mat4(), cubePosition);
+	mat4 rotationMatrix1 = glm::rotate(mat4(), cubeRotation, rotationAxis);
 
-	mat4 fullTransformMatrix = projectionMatrix * translationMatrix * rotationMatrix1;
+	mat4 objectToWorldMatrix = translationMatrix * rotationMatrix1;
+	//mat4 worldToViewMatrix = glm::lookAt(cameraPosition, cubePosition, cameraUp);
+	mat4 worldToViewMatrix = glm::lookAt(cameraPosition, cameraPosition + vec3(0, 0, -10.0f), cameraUp);
+	
+	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 1000.0f);
+	mat4 fullTransformMatrix = projectionMatrix * worldToViewMatrix * objectToWorldMatrix;
 
 	GLint fullTransformMatrixUniformLocation =
 		glGetUniformLocation(programID, "fullTransformMatrix");
@@ -78,6 +86,38 @@ void Prj4Window::paintGL()
 		GL_FALSE, &fullTransformMatrix[0][0]);
 
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
+}
+
+void Prj4Window::keyPressEvent(QKeyEvent* e) {
+	vec4 cameraPositionVec4 = vec4(cameraPosition, 1);
+	vec4 cameraUpVec4 = vec4(cameraUp, 1);
+
+	switch (e->key())
+	{
+	case Qt::Key::Key_Q:
+		cameraPositionVec4 += (vec4(0, 0, -1,0) * CAMERA_MOVE_STEP);
+		break;
+	case Qt::Key::Key_E:
+		cameraPositionVec4 += (vec4(0, 0, 1, 0) * CAMERA_MOVE_STEP);
+		break;
+	case Qt::Key::Key_A:
+		cameraPositionVec4 += (vec4(-1, 0, 0, 0) * CAMERA_MOVE_STEP);
+		break;
+	case Qt::Key::Key_D:
+		cameraPositionVec4 += (vec4(1, 0, 0, 0) * CAMERA_MOVE_STEP);
+		break;
+	case Qt::Key::Key_W:
+		cameraPositionVec4 += (vec4(0, -1, 0, 0) * CAMERA_MOVE_STEP);
+		break;
+	case Qt::Key::Key_S:
+		cameraPositionVec4 += (vec4(0, 1, 0, 0) * CAMERA_MOVE_STEP);
+		break;
+	}
+
+	cameraPosition = vec3(cameraPositionVec4.x, cameraPositionVec4.y, cameraPositionVec4.z);
+	cameraUp = vec3(cameraUpVec4.x, cameraUpVec4.y, cameraUpVec4.z);
+
+	repaint();
 }
 
 bool checkStatus(
@@ -169,10 +209,22 @@ void Prj4Window::initializeGL()
 	int allMsec = time.second() * 1000 + time.msec();
 	lastUpdate = allMsec;
 
-	rotation = 0;
+	cubePosition = vec3(0, 0, -10.0f);
+	cameraPosition = vec3(0, 0, 0);
+	cameraUp = vec3(0, 1, 0);
+
+	cubeRotation = 0;
+
+	setMouseTracking(true);
 
 	glewInit();
 	glEnable(GL_DEPTH_TEST);
 	sendDataToOpenGL();
 	installShaders();
+}
+
+Prj4Window::~Prj4Window()
+{
+	glUseProgram(0);
+	glDeleteProgram(programID);
 }

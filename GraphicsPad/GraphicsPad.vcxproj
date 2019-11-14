@@ -167,12 +167,14 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /Y</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Mainer.cpp" />
     <ClCompile Include="Primitives\ShapeGenerator.cpp" />
     <ClCompile Include="Prj3Window.cpp" />
     <ClCompile Include="Prj4Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Primitives\ShapeData.h" />
     <ClInclude Include="Primitives\ShapeGenerator.h" />
     <ClInclude Include="Primitives\Vertex.h" />

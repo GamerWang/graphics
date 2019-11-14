@@ -5,6 +5,7 @@
     <ClCompile Include="Prj3Window.cpp" />
     <ClCompile Include="Prj4Window.cpp" />
     <ClCompile Include="Primitives\ShapeGenerator.cpp" />
+    <ClCompile Include="Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Prj3Window.h" />
@@ -12,6 +13,7 @@
     <ClInclude Include="Primitives\ShapeData.h" />
     <ClInclude Include="Primitives\ShapeGenerator.h" />
     <ClInclude Include="Primitives\Vertex.h" />
+    <ClInclude Include="Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="prj2_frag.glsl">
