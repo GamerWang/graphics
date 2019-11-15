@@ -30,12 +30,12 @@ GLuint numIndices;
 Camera camera;
 
 #define ROTATION_SPEED 10.0f
-#define CAMERA_MOVE_STEP 0.3f
+#define CAMERA_MOVE_STEP 0.2f
 #define CAMERA_ROTATION_STEP 1.0f
 
 void sendDataToOpenGL()
 {
-	ShapeData shape = ShapeGenerator::makeCube();
+	ShapeData shape = ShapeGenerator::makeTeapot();
 
 	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
@@ -62,7 +62,7 @@ void Prj4Window::paintGL()
 	timePassed /= 1000;
 	lastUpdate = currentUpdate;
 
-	vec3 rotationAxis = vec3(1, 1, 1);
+	vec3 rotationAxis = vec3(0, 1, 0);
 
 	cubeRotation += (timePassed * ROTATION_SPEED);
 
@@ -70,9 +70,10 @@ void Prj4Window::paintGL()
 	glViewport(0, 0, width(), height());
 
 	mat4 translationMatrix = glm::translate(mat4(), cubePosition);
+	mat4 rotationMatrixOrigin = glm::rotate(mat4(), -90.0f, vec3(1, 0, 0));
 	mat4 rotationMatrix1 = glm::rotate(mat4(), cubeRotation, rotationAxis);
 
-	mat4 objectToWorldMatrix = translationMatrix * rotationMatrix1;
+	mat4 objectToWorldMatrix = translationMatrix * rotationMatrix1 * rotationMatrixOrigin;
 	//mat4 worldToViewMatrix = glm::lookAt(cameraPosition, cubePosition, cameraUp);
 	mat4 worldToViewMatrix = glm::lookAt(cameraPosition, cameraPosition + vec3(0, 0, -10.0f), cameraUp);
 	
@@ -210,7 +211,7 @@ void Prj4Window::initializeGL()
 	lastUpdate = allMsec;
 
 	cubePosition = vec3(0, 0, -10.0f);
-	cameraPosition = vec3(0, 0, 0);
+	cameraPosition = vec3(0, 1.2f, 0);
 	cameraUp = vec3(0, 1, 0);
 
 	cubeRotation = 0;

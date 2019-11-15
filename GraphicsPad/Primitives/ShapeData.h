@@ -21,8 +21,8 @@ struct ShapeData
 	}
 	void cleanup()
 	{
-		delete [] vertices;
-		delete [] indices;
+		delete[] vertices;
+		delete[] indices;
 		numVertices = numIndices = 0;
 	}
 };

@@ -2,8 +2,11 @@
 
 in layout(location=0) vec3 position;
 in layout(location=1) vec3 vertexColor;
+in layout(location=2) vec3 normal;
 
 uniform mat4 fullTransformMatrix;
+uniform mat4 objectToWorldMatrix;
+uniform mat4 worldToViewMatrix;
 
 out vec3 theColor;
 

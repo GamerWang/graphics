@@ -177,6 +177,7 @@ xcopy $(ProjectDir)*.glsl $(TargetDir) /Y</Command>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Primitives\ShapeData.h" />
     <ClInclude Include="Primitives\ShapeGenerator.h" />
+    <ClInclude Include="Primitives\TeapotData.h" />
     <ClInclude Include="Primitives\Vertex.h" />
     <ClInclude Include="Prj3Window.h" />
     <ClInclude Include="Prj4Window.h" />
