@@ -33,6 +33,7 @@ Camera camera;
 #define CAMERA_MOVE_STEP 0.2f
 #define CAMERA_ROTATION_STEP 1.0f
 
+// old version
 void sendDataToOpenGL()
 {
 	ShapeData shape = ShapeGenerator::makeTeapot();
@@ -42,9 +43,11 @@ void sendDataToOpenGL()
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, shape.vertexBufferSize(), shape.vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, 0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (char*)(sizeof(float) * 3));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (char*)(sizeof(float) * 3));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (char*)(sizeof(float) * 6));
 
 	GLuint indexArrayBufferID;
 	glGenBuffers(1, &indexArrayBufferID);
@@ -54,10 +57,47 @@ void sendDataToOpenGL()
 	shape.cleanup();
 }
 
+//void sendDataToOpenGL() {
+//	ShapeData teapot = ShapeGenerator::makeTeapot();
+//
+//	GLuint theBufferID;
+//	GLuint teapotVertexArrayObjectID;
+//	GLuint teapotIndexByteOffset;
+//	
+//	glGenBuffers(1, &theBufferID);
+//	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
+//	glBufferData(GL_ARRAY_BUFFER,
+//		teapot.vertexBufferSize() + teapot.indexBufferSize(),
+//		0,GL_STATIC_DRAW);
+//	GLsizeiptr currentOffset = 0;
+//	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, teapot.vertexBufferSize(), teapot.vertices);
+//	currentOffset += teapot.vertexBufferSize();
+//	glBufferSubData(GL_ARRAY_BUFFER, currentOffset, teapot.indexBufferSize(), teapot.indices);
+//
+//	GLuint teapotNumIndices = teapot.numIndices;
+//
+//	glGenVertexArrays(1, &teapotVertexArrayObjectID);
+//
+//	glBindVertexArray(teapotVertexArrayObjectID);
+//	glEnableVertexAttribArray(0);
+//	glBindBuffer(GL_ARRAY_BUFFER, theBufferID);
+//	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, 0);
+//	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(sizeof(float) * 3));
+//	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 9, (void*)(sizeof(float) * 3));
+//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, theBufferID);
+//
+//	teapotIndexByteOffset = teapot.vertexBufferSize();
+//
+//	teapot.cleanup();
+//}
+
 void Prj4Window::paintGL()
 {
 	QTime time = QTime::currentTime();
-	int currentUpdate = time.second() * 1000 + time.msec();
+	int currentUpdate =
+		time.minute() * 60 * 1000 + 
+		time.second() * 1000 + 
+		time.msec();
 	float timePassed = currentUpdate - lastUpdate;
 	timePassed /= 1000;
 	lastUpdate = currentUpdate;
@@ -74,17 +114,43 @@ void Prj4Window::paintGL()
 	mat4 rotationMatrix1 = glm::rotate(mat4(), cubeRotation, rotationAxis);
 
 	mat4 objectToWorldMatrix = translationMatrix * rotationMatrix1 * rotationMatrixOrigin;
-	//mat4 worldToViewMatrix = glm::lookAt(cameraPosition, cubePosition, cameraUp);
 	mat4 worldToViewMatrix = glm::lookAt(cameraPosition, cameraPosition + vec3(0, 0, -10.0f), cameraUp);
-	
 	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 1000.0f);
-	mat4 fullTransformMatrix = projectionMatrix * worldToViewMatrix * objectToWorldMatrix;
+	mat4 worldToClampMatrix = projectionMatrix * worldToViewMatrix;
 
-	GLint fullTransformMatrixUniformLocation =
-		glGetUniformLocation(programID, "fullTransformMatrix");
+	GLint objectToWorldMatrixUniformLocation =
+		glGetUniformLocation(programID, "objectToWorldMatrix");
+	glUniformMatrix4fv(objectToWorldMatrixUniformLocation, 1,
+		GL_FALSE, &objectToWorldMatrix[0][0]);
 
-	glUniformMatrix4fv(fullTransformMatrixUniformLocation, 1,
-		GL_FALSE, &fullTransformMatrix[0][0]);
+	GLint worldToClampMatrixUniformLocation =
+		glGetUniformLocation(programID, "worldToClampMatrix");
+	glUniformMatrix4fv(worldToClampMatrixUniformLocation, 1,
+		GL_FALSE, &worldToClampMatrix[0][0]);
+
+	GLint directionalLightDirUniformLocation = 
+		glGetUniformLocation(programID, "directionalLightDir");
+	glUniform3fv(directionalLightDirUniformLocation, 1, &directionalLightDir[0]);
+
+	GLint ambientLightColorUniformLocation = 
+		glGetUniformLocation(programID, "ambientLightColor");
+	glUniform3fv(ambientLightColorUniformLocation, 1, &ambientLightColor[0]);
+
+	GLint diffuseColorUniformLocation =
+		glGetUniformLocation(programID, "diffuseColor");
+	glUniform3fv(diffuseColorUniformLocation, 1, &teapotDiffuseColor[0]);
+
+	GLint specularColorUniformLocation =
+		glGetUniformLocation(programID, "specularColor");
+	glUniform3fv(specularColorUniformLocation, 1, &teapotSpecularColor[0]);
+	
+	GLint glossinessUniformLocation =
+		glGetUniformLocation(programID, "glossiness");
+	glUniform1f(glossinessUniformLocation, teapotGlossiness);
+
+	GLint cameraPosUniformLocation =
+		glGetUniformLocation(programID, "cameraPos");
+	glUniform3fv(cameraPosUniformLocation, 1, &cameraPosition[0]);
 
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 }
@@ -210,11 +276,21 @@ void Prj4Window::initializeGL()
 	int allMsec = time.second() * 1000 + time.msec();
 	lastUpdate = allMsec;
 
-	cubePosition = vec3(0, 0, -10.0f);
 	cameraPosition = vec3(0, 1.2f, 0);
 	cameraUp = vec3(0, 1, 0);
 
+	cubePosition = vec3(0, 0, -10.0f);
 	cubeRotation = 0;
+
+	directionalLightDir = vec3(2, -2, -1);
+	pointLightPosition = vec3(0, -5.0f, -5.0f);
+
+	ambientLightColor = vec3(0.01f, 0.01f, 0.02f);
+
+	teapotDiffuseColor = vec3(1.0f, 0, 0);
+	teapotSpecularColor = vec3(0.8f, 0.8f, 0.8f);
+
+	teapotGlossiness = 10;
 
 	setMouseTracking(true);
 

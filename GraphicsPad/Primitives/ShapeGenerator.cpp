@@ -427,39 +427,6 @@ ShapeData ShapeGenerator::makePlane(uint dimensions)
 	return ret;
 }
 
-//ShapeData ShapeGenerator::makeTeapot(uint tesselation, const glm::mat4& lidTransform)
-//{
-//	ShapeData ret;
-//
-//	ret.numVertices = 32 * (tesselation + 1) * (tesselation + 1);
-//	uint faces = tesselation * tesselation * 32;
-//	float* vertices = new float[ret.numVertices * 3];
-//	float* normals = new float[ret.numVertices * 3];
-//	float* textureCoordinates = new float[ret.numVertices * 2];
-//	ret.numIndices = faces * 6;
-//	ret.indices = new unsigned short[ret.numIndices];
-//
-//	generatePatches(vertices, normals, textureCoordinates, ret.indices, tesselation);
-//	moveLid(tesselation, vertices, lidTransform);
-//
-//	// Adapt/convert their data format to mine
-//	ret.vertices = new Vertex[ret.numVertices];
-//	for (uint i = 0; i < ret.numVertices; i++)
-//	{
-//		Vertex& v = ret.vertices[i];
-//		v.position.x = vertices[i * 3 + 0];
-//		v.position.y = vertices[i * 3 + 1];
-//		v.position.z = vertices[i * 3 + 2];
-//		v.normal.x = normals[i * 3 + 0];
-//		v.normal.y = normals[i * 3 + 1];
-//		v.normal.z = normals[i * 3 + 2];
-//		//v.color = randomColor();
-//		v.color = v.normal;
-//	}
-//	return ret;
-//}
-
-// previous version of the teapot shape
 ShapeData ShapeGenerator::makeTeapot(uint tesselation, const glm::mat4& lidTransform)
 {
 	ShapeData ret;
@@ -483,44 +450,15 @@ ShapeData ShapeGenerator::makeTeapot(uint tesselation, const glm::mat4& lidTrans
 		v.position.x = vertices[i * 3 + 0];
 		v.position.y = vertices[i * 3 + 1];
 		v.position.z = vertices[i * 3 + 2];
-		v.color = randomColor();
+		v.normal.x = normals[i * 3 + 0];
+		v.normal.y = normals[i * 3 + 1];
+		v.normal.z = normals[i * 3 + 2];
+		//v.color = v.normal;
+		v.color = vec3(1, 1, 1);
 	}
 	return ret;
 }
 
-//void ShapeGenerator::generatePatches(float* v, float* n, float* tc, unsigned short* el, int grid) {
-//	float* B = new float[4 * (grid + 1)];  // Pre-computed Bernstein basis functions
-//	float* dB = new float[4 * (grid + 1)]; // Pre-computed derivitives of basis functions
-//
-//	int idx = 0, elIndex = 0, tcIndex = 0;
-//
-//	// Pre-compute the basis functions  (Bernstein polynomials)
-//	// and their derivatives
-//	computeBasisFunctions(B, dB, grid);
-//
-//	// Build each patch
-//	// The rim
-//	buildPatchReflect(0, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, true, true);
-//	// The body
-//	buildPatchReflect(1, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, true, true);
-//	buildPatchReflect(2, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, true, true);
-//	// The lid
-//	buildPatchReflect(3, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, true, true);
-//	buildPatchReflect(4, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, true, true);
-//	// The bottom
-//	buildPatchReflect(5, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, true, true);
-//	// The handle
-//	buildPatchReflect(6, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, false, true);
-//	buildPatchReflect(7, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, false, true);
-//	// The spout
-//	buildPatchReflect(8, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, false, true);
-//	buildPatchReflect(9, B, dB, v, n, tc, el, idx, elIndex, tcIndex, grid, false, true);
-//
-//	delete[] B;
-//	delete[] dB;
-//}
-
-// previous version
 void ShapeGenerator::generatePatches(float* v, float* n, float* tc, unsigned short* el, int grid) {
 	float* B = new float[4 * (grid + 1)];  // Pre-computed Bernstein basis functions
 	float* dB = new float[4 * (grid + 1)]; // Pre-computed derivitives of basis functions
@@ -568,48 +506,6 @@ void ShapeGenerator::moveLid(int grid, float* v, mat4 lidTransform) {
 	}
 }
 
-//void ShapeGenerator::buildPatchReflect(int patchNum,
-//	float* B, float* dB,
-//	float* v, float* n,
-//	float* tc, unsigned short* el,
-//	int& index, int& elIndex, int& tcIndex, int grid,
-//	bool reflectX, bool reflectY)
-//{
-//	glm::vec3 patch[4][4];
-//	glm::vec3 patchRevV[4][4];
-//	getPatch(patchNum, patch, false);
-//	getPatch(patchNum, patchRevV, true);
-//
-//	// Patch without modification
-//	buildPatch(patch, B, dB, v, n, tc, el,
-//		index, elIndex, tcIndex, grid, mat3(1.0f), true);
-//
-//	// Patch reflected in x
-//	if (reflectX) {
-//		buildPatch(patchRevV, B, dB, v, n, tc, el,
-//			index, elIndex, tcIndex, grid, glm::mat3(glm::vec3(-1.0f, 0.0f, 0.0f),
-//				glm::vec3(0.0f, 1.0f, 0.0f),
-//				glm::vec3(0.0f, 0.0f, 1.0f)), false);
-//	}
-//
-//	// Patch reflected in y
-//	if (reflectY) {
-//		buildPatch(patchRevV, B, dB, v, n, tc, el,
-//			index, elIndex, tcIndex, grid, glm::mat3(glm::vec3(1.0f, 0.0f, 0.0f),
-//				glm::vec3(0.0f, -1.0f, 0.0f),
-//				glm::vec3(0.0f, 0.0f, 1.0f)), false);
-//	}
-//
-//	// Patch reflected in x and y
-//	if (reflectX && reflectY) {
-//		buildPatch(patch, B, dB, v, n, tc, el,
-//			index, elIndex, tcIndex, grid, glm::mat3(glm::vec3(-1.0f, 0.0f, 0.0f),
-//				glm::vec3(0.0f, -1.0f, 0.0f),
-//				glm::vec3(0.0f, 0.0f, 1.0f)), true);
-//	}
-//}
-
-// old version
 void ShapeGenerator::buildPatchReflect(int patchNum,
 	float* B, float* dB,
 	float* v, float* n,
@@ -651,61 +547,6 @@ void ShapeGenerator::buildPatchReflect(int patchNum,
 	}
 }
 
-//void ShapeGenerator::buildPatch(glm::vec3 patch[][4],
-//	float* B, float* dB,
-//	float* v, float* n, float* tc,
-//	unsigned short* el,
-//	int& index, int& elIndex, int& tcIndex, int grid, glm::mat3 reflect,
-//	bool invertNormal)
-//{
-//	int startIndex = index / 3;
-//	float tcFactor = 1.0f / grid;
-//
-//	for (int i = 0; i <= grid; i++)
-//	{
-//		for (int j = 0; j <= grid; j++)
-//		{
-//			glm::vec3 pt = reflect * evaluate(i, j, B, patch);
-//			glm::vec3 norm = reflect * evaluateNormal(i, j, B, dB, patch);
-//			if (invertNormal)
-//				norm = -norm;
-//
-//			v[index] = pt.x;
-//			v[index + 1] = pt.y;
-//			v[index + 2] = pt.z;
-//
-//			n[index] = norm.x;
-//			n[index + 1] = norm.y;
-//			n[index + 2] = norm.z;
-//
-//			tc[tcIndex] = i * tcFactor;
-//			tc[tcIndex + 1] = j * tcFactor;
-//
-//			index += 3;
-//			tcIndex += 2;
-//		}
-//	}
-//
-//	for (int i = 0; i < grid; i++)
-//	{
-//		int iStart = i * (grid + 1) + startIndex;
-//		int nextiStart = (i + 1) * (grid + 1) + startIndex;
-//		for (int j = 0; j < grid; j++)
-//		{
-//			el[elIndex] = iStart + j;
-//			el[elIndex + 1] = nextiStart + j + 1;
-//			el[elIndex + 2] = nextiStart + j;
-//
-//			el[elIndex + 3] = iStart + j;
-//			el[elIndex + 4] = iStart + j + 1;
-//			el[elIndex + 5] = nextiStart + j + 1;
-//
-//			elIndex += 6;
-//		}
-//	}
-//}
-
-// old version
 void ShapeGenerator::buildPatch(glm::vec3 patch[][4],
 	float* B, float* dB,
 	float* v, float* n, float* tc,

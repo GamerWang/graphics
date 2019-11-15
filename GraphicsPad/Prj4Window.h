@@ -21,6 +21,14 @@ protected:
 	vec3 cameraUp;
 	vec3 cubePosition;
 	float cubeRotation;
+
+	vec3 pointLightPosition;
+	vec3 directionalLightDir;
+	vec3 ambientLightColor;
+
+	vec3 teapotDiffuseColor;
+	vec3 teapotSpecularColor;
+	float teapotGlossiness;
 public:
 	~Prj4Window();
 };
