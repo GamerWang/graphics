@@ -152,6 +152,10 @@ void Prj4Window::paintGL()
 		glGetUniformLocation(programID, "cameraPos");
 	glUniform3fv(cameraPosUniformLocation, 1, &cameraPosition[0]);
 
+	GLint pointLightPosUniformLocation =
+		glGetUniformLocation(programID, "pointLightPos");
+	glUniform3fv(pointLightPosUniformLocation, 1, &pointLightPosition[0]);
+
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 }
 
@@ -178,6 +182,14 @@ void Prj4Window::keyPressEvent(QKeyEvent* e) {
 		break;
 	case Qt::Key::Key_S:
 		cameraPositionVec4 += (vec4(0, 1, 0, 0) * CAMERA_MOVE_STEP);
+		break;
+	case Qt::Key::Key_Up:
+		break;
+	case Qt::Key::Key_Down:
+		break;
+	case Qt::Key::Key_Left:
+		break;
+	case Qt::Key::Key_Right:
 		break;
 	}
 
@@ -283,14 +295,14 @@ void Prj4Window::initializeGL()
 	cubeRotation = 0;
 
 	directionalLightDir = vec3(2, -2, -1);
-	pointLightPosition = vec3(0, -5.0f, -5.0f);
+	pointLightPosition = vec3(0, 5.0f, -5.0f);
 
 	ambientLightColor = vec3(0.01f, 0.01f, 0.02f);
 
 	teapotDiffuseColor = vec3(1.0f, 0, 0);
 	teapotSpecularColor = vec3(0.8f, 0.8f, 0.8f);
 
-	teapotGlossiness = 10;
+	teapotGlossiness = 20;
 
 	setMouseTracking(true);
 

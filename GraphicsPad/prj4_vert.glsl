@@ -13,6 +13,7 @@ uniform vec3 directionalLightDir;
 out vec3 theColor;
 out vec4 theNormal;
 out vec4 viewReflectDirWorld;
+out vec4 pointLightDirWorld;
 //out vec4 theDirectional;
 
 void main()
@@ -23,8 +24,10 @@ void main()
 	vertex = objectToWorldMatrix * vertex;
 
 	viewReflectDirWorld = reflect(
-		vec4(cameraPos, 1.0) - vertex, 
+		vec4(cameraPos, 2.0) - vertex, 
 		theNormal);
+
+	pointLightDirWorld = vec4(pointLightPos, 2.0) - vertex;
 
 	vertex = worldToClampMatrix * vertex;
 	gl_Position = vertex;

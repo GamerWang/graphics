@@ -4,6 +4,7 @@ out vec4 daColor;
 in vec3 theColor;
 in vec4 theNormal;
 in vec4 viewReflectDirWorld;
+in vec4 pointLightDirWorld;
 
 uniform vec3 cameraPos;
 
@@ -16,21 +17,41 @@ uniform vec3 ambientLightColor;
 
 void main()
 {
+	vec4 normal = normalize(theNormal);
+	vec4 viewRefl = normalize(viewReflectDirWorld);
 	vec4 dirLightDir = -1 * vec4(directionalLightDir, 0.0);
 	dirLightDir = normalize(dirLightDir);
-	vec4 normal = normalize(theNormal);
+	vec4 pointLightDir = normalize(pointLightDirWorld);
 
+	// directional light values
 	float dirDiffBrightness = dot(dirLightDir, normal);
 	dirDiffBrightness = clamp(dirDiffBrightness, 0, 1);
 	
-	vec4 viewRefl = normalize(viewReflectDirWorld);
-	float dirSpecBrightness = dot(viewRefl, normal);
+	float dirSpecBrightness = dot(viewRefl, -1 * dirLightDir);
 	dirSpecBrightness = clamp(dirSpecBrightness, 0, 1);
 	dirSpecBrightness = pow(dirSpecBrightness, glossiness);
 
-	vec3 color = theColor * (
-		dirDiffBrightness * diffuseColor +
-		dirSpecBrightness * specularColor);
+	// point light vallues
+	float pointDiffBrightness = dot(pointLightDir, normal);
+	pointDiffBrightness = clamp(pointDiffBrightness, 0, 1);
+
+	float pointSpecBrightness = dot(viewRefl, -1 * pointLightDir);
+	pointSpecBrightness = clamp(pointSpecBrightness, 0, 1);
+	pointSpecBrightness = pow(pointSpecBrightness, glossiness);
+
+	vec3 color = theColor;
+	// directional light rendering
+//	color = color * (
+//		dirDiffBrightness * diffuseColor +
+//		dirSpecBrightness * specularColor
+//		);
+	// point light rendering
+	color = color * (
+		pointDiffBrightness * diffuseColor + 
+		pointSpecBrightness * specularColor
+	);
+
+	
 	color += ambientLightColor;
 
 	// gamma correction
