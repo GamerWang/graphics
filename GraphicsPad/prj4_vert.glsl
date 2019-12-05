@@ -14,6 +14,7 @@ out vec3 theColor;
 out vec4 theNormal;
 out vec4 viewReflectDirWorld;
 out vec4 pointLightDirWorld;
+out vec3 objectPos;
 //out vec4 theDirectional;
 
 void main()
@@ -21,6 +22,7 @@ void main()
 	theNormal = objectToWorldMatrix * vec4(normal, 0.0);
 	
 	vec4 vertex = vec4(position, 1.0);
+	objectPos = vec3(vertex);
 	vertex = objectToWorldMatrix * vertex;
 
 	viewReflectDirWorld = reflect(

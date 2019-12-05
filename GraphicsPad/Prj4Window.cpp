@@ -36,7 +36,8 @@ Camera camera;
 // old version
 void sendDataToOpenGL()
 {
-	ShapeData shape = ShapeGenerator::makeTeapot();
+	//ShapeData shape = ShapeGenerator::makeTeapot();
+	ShapeData shape = ShapeGenerator::makeCube();
 
 	GLuint vertexBufferID;
 	glGenBuffers(1, &vertexBufferID);
@@ -102,7 +103,8 @@ void Prj4Window::paintGL()
 	timePassed /= 1000;
 	lastUpdate = currentUpdate;
 
-	vec3 rotationAxis = vec3(0, 1, 0);
+	//vec3 rotationAxis = vec3(0, 1, 0);
+	vec3 rotationAxis = vec3(1, 1, 1);
 
 	cubeRotation += (timePassed * ROTATION_SPEED);
 
@@ -247,6 +249,7 @@ string readShaderCode(const char* fileName)
 
 void installShaders()
 {
+	// installl shaders
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -273,6 +276,34 @@ void installShaders()
 		return;
 
 	glUseProgram(programID);
+
+	// read texture file
+	const char* texName = "./GrassBottom.png";
+	QImage image = QImage(texName, "PNG");
+	QImage timg = QGLWidget::convertToGLFormat(image);
+
+	// copy file to OpenGL
+	glActiveTexture(GL_TEXTURE0);
+	GLuint tid;
+	glGenTextures(1, &tid);
+	glBindTexture(GL_TEXTURE_2D, tid);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, timg.width(),
+		timg.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+		timg.bits());
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+		GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+		GL_NEAREST);
+
+	// Set the tex1 sampler uniform to refer to texture unit 0
+	int loc = glGetUniformLocation(programID, "Tex1");
+	if (loc >= 0)
+		glUniform1i(loc, 0);
+	else
+		fprintf(stderr, "Uniform variable Tex1 not found!\n");
+
+
 }
 
 void Prj4Window::initializeGL()
@@ -288,7 +319,7 @@ void Prj4Window::initializeGL()
 	int allMsec = time.second() * 1000 + time.msec();
 	lastUpdate = allMsec;
 
-	cameraPosition = vec3(0, 1.2f, 0);
+	cameraPosition = vec3(0, 0, 0);
 	cameraUp = vec3(0, 1, 0);
 
 	cubePosition = vec3(0, 0, -10.0f);
@@ -297,7 +328,7 @@ void Prj4Window::initializeGL()
 	directionalLightDir = vec3(2, -2, -1);
 	pointLightPosition = vec3(0, 5.0f, -5.0f);
 
-	ambientLightColor = vec3(0.01f, 0.01f, 0.02f);
+	ambientLightColor = vec3(0.03f, 0.03f, 0.06f);
 
 	teapotDiffuseColor = vec3(1.0f, 0, 0);
 	teapotSpecularColor = vec3(0.8f, 0.8f, 0.8f);
