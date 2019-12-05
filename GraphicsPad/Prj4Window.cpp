@@ -99,6 +99,8 @@ void Prj4Window::paintGL()
 		time.minute() * 60 * 1000 + 
 		time.second() * 1000 + 
 		time.msec();
+	float currentTime = currentUpdate;
+	currentTime /= 1000;
 	float timePassed = currentUpdate - lastUpdate;
 	timePassed /= 1000;
 	lastUpdate = currentUpdate;
@@ -115,6 +117,7 @@ void Prj4Window::paintGL()
 	mat4 rotationMatrixOrigin = glm::rotate(mat4(), -90.0f, vec3(1, 0, 0));
 	mat4 rotationMatrix1 = glm::rotate(mat4(), cubeRotation, rotationAxis);
 
+	//mat4 objectToWorldMatrix = translationMatrix * rotationMatrix1 * rotationMatrixOrigin;
 	mat4 objectToWorldMatrix = translationMatrix * rotationMatrix1 * rotationMatrixOrigin;
 	mat4 worldToViewMatrix = glm::lookAt(cameraPosition, cameraPosition + vec3(0, 0, -10.0f), cameraUp);
 	mat4 projectionMatrix = glm::perspective(60.0f, ((float)width()) / height(), 0.1f, 1000.0f);
@@ -157,6 +160,10 @@ void Prj4Window::paintGL()
 	GLint pointLightPosUniformLocation =
 		glGetUniformLocation(programID, "pointLightPos");
 	glUniform3fv(pointLightPosUniformLocation, 1, &pointLightPosition[0]);
+
+	GLint timeUniformLocation =
+		glGetUniformLocation(programID, "time");
+	glUniform1f(timeUniformLocation, currentTime);
 
 	glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0);
 }
@@ -279,6 +286,7 @@ void installShaders()
 
 	// read texture file
 	const char* texName = "./GrassBottom.png";
+	//const char* texName = "./Sierpinski.png";
 	QImage image = QImage(texName, "PNG");
 	QImage timg = QGLWidget::convertToGLFormat(image);
 

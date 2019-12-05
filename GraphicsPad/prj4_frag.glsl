@@ -12,6 +12,7 @@ uniform vec3 cameraPos;
 uniform vec3 diffuseColor;
 uniform vec3 specularColor;
 uniform float glossiness;
+uniform float time;
 
 uniform vec3 directionalLightDir;
 uniform vec3 ambientLightColor;
@@ -51,6 +52,23 @@ void main()
 	
 	float edgeBias = 0.001f;
 	vec3 editedPos = objectPos / 2 + vec3(0.5f);
+//	vec3 editedPos = objectPos / 2;
+	float mytime = time;
+	mytime = mytime/5 - floor(mytime/5);
+
+	float sample1Weight = cos(3.14159f*mytime/2.0f);
+//	sample1Weight = sqrt(sample1Weight);
+	sample1Weight = pow(sample1Weight, 0.7f);
+	float sample2Weight = 1 - sample1Weight;
+
+//	mytime = 0.5f * sin(3.14159f*(mytime-0.5f))+0.5f;
+
+	mytime *= 4;
+	mytime = pow(2, mytime);
+
+
+	vec3 samplePos1 = editedPos / mytime;
+	vec3 samplePos2 = editedPos * 16.0f / mytime;
 
 	float xValue = cos(objectPos.x * 3.14f / 2);
 	xValue = 1-xValue;
@@ -64,22 +82,25 @@ void main()
 	zValue = 1-zValue;
 	zValue = floor(zValue + edgeBias);
 	
-	vec2 TexCoordXZ = vec2(editedPos.x, editedPos.z);
-	vec4 texColorXZ = texture(Tex1, TexCoordXZ);
+	vec2 TexCoordXZ1 = vec2(samplePos1.x, samplePos1.z);
+	vec2 TexCoordXZ2 = vec2(samplePos2.x, samplePos2.z);
+	vec4 texColorXZ1 = texture(Tex1, TexCoordXZ1);
+	vec4 texColorXZ2 = texture(Tex1, TexCoordXZ2);
 
-	vec2 TexCoordXY = vec2(editedPos.x, editedPos.y);
-	vec4 texColorXY = texture(Tex1, TexCoordXY);
+	vec2 TexCoordXY1 = vec2(samplePos1.x, samplePos1.y);
+	vec2 TexCoordXY2 = vec2(samplePos2.x, samplePos2.y);
+	vec4 texColorXY1 = texture(Tex1, TexCoordXY1);
+	vec4 texColorXY2 = texture(Tex1, TexCoordXY2);
 
-	vec2 TexCoordYZ = vec2(editedPos.y, editedPos.z);
-	vec4 texColorYZ = texture(Tex1, TexCoordYZ);
+	vec2 TexCoordYZ1 = vec2(samplePos1.y, samplePos1.z);
+	vec2 TexCoordYZ2 = vec2(samplePos2.y, samplePos2.z);
+	vec4 texColorYZ1 = texture(Tex1, TexCoordYZ1);
+	vec4 texColorYZ2 = texture(Tex1, TexCoordYZ2);
 
-//	vec4 texColor = texColorXZ * yValue + 
-//	texColorXY * zValue +
-//	texColorYZ * xValue;
-
-	vec4 texColor = texColorXZ * yValue +
-	texColorXY * zValue +
-	texColorYZ * xValue;
+	vec4 texColor = 
+		(texColorXZ1*sample1Weight + texColorXZ2*sample2Weight) * yValue +
+		(texColorXY1*sample1Weight + texColorXY2*sample2Weight) * zValue +
+		(texColorYZ1*sample1Weight + texColorYZ2*sample2Weight) * xValue;
 
 	color = color * (
 		(pointDiffBrightness + ambientLightColor) * vec3(texColor) + 
